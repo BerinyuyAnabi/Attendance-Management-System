@@ -1,0 +1,320 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5f7fa;
+  color: #333;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard {
+  min-height: 100vh;
+}
+
+/* Top Bar */
+.top-bar {
+  background-color: #923D41;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Search */
+.search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #923D41;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #7a3336;
+}
+
+.search button {
+  background-color: white;
+  color: black;
+}
+
+/* User */
+.user {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.user img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #95a5a6;
+}
+
+/* Main Content */
+.section_details {
+  padding: 2rem;
+}
+
+h5 {
+  margin: 2rem 0 1rem 0;
+  color: #2c3e50;
+}
+
+/* Dashboard */
+.dashboard_content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard_content div {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.dashboard_content h4 {
+  color: #923D41;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard_content p {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #923D41;
+}
+
+/* Courses */
+.courses {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.course1 {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.course1 #course_code {
+  color: #923D41;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.course1 h5 {
+  color: #2c3e50;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.course1 .details {
+  display: flex;
+  justify-content: space-around;
+  padding: 1rem 0;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  margin: 1rem 0;
+}
+
+.course1 .details p {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #923D41;
+}
+
+.course1 button {
+  width: 100%;
+}
+
+.sessions {
+  margin-bottom: 2rem;
+}
+
+.session1 {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session_details #date {
+  color: #923D41;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.session_details p {
+  color: #666;
+  margin: 0.25rem 0;
+}
+
+/* Manage Students */
+.manage_students {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-bottom: 2rem;
+}
+
+.stud_details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+
+.grades {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.grade {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.grade {
+  border-bottom: 2px solid #923D41;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.grade h6 {
+  color: #923D41;
+  font-weight: bold;
+}
+
+.grade-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+
+.grade-value {
+  font-weight: bold;
+  color: #923D41;
+}
+
+.grade-overall {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #923D41;
+  color: white;
+  border-radius: 3px;
+  margin-top: 1rem;
+}
+
+.grade-overall .grade-value {
+  color: white;
+}
+
+.feedback {
+  margin-bottom: 2rem;
+}
+
+.feedback {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  border-left: 4px solid #923D41;
+  margin-bottom: 1rem;
+}
+
+.feedback {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.feedback-course {
+  color: #923D41;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+
+.join-course {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.course-description {
+  color: #666;
+  margin: 1rem 0;
+}
+
+.join-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auditor,
+.observer {
+  flex: 1;
+  padding: 0.75rem;
+}

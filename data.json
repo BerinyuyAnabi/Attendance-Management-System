@@ -1,0 +1,63 @@
+{
+  "user": {
+    "name": "John Doe",
+    "email": "john@example.com"
+  },
+  "courses": [
+    {
+      "code": "CS 601",
+      "name": "Programming with Python",
+      "students": 115,
+      "sessions": 45
+    },
+    {
+      "code": "CS 501",
+      "name": "Data Structures",
+      "students": 98,
+      "sessions": 38
+    },
+    {
+      "code": "CS 401",
+      "name": "Web Development",
+      "students": 87,
+      "sessions": 42
+    }
+  ],
+  "sessions": [
+    {
+      "date": "Oct 10, 2025",
+      "course": "CS101",
+      "topic": "Introduction to Python",
+      "attendance": "85%",
+      "status": "Completed"
+    },
+    {
+      "date": "Oct 11, 2025",
+      "course": "CS102",
+      "topic": "Functions and Modules",
+      "attendance": "92%",
+      "status": "Completed"
+    },
+    {
+      "date": "Oct 12, 2025",
+      "course": "CS103",
+      "topic": "Object-Oriented Programming",
+      "attendance": "88%",
+      "status": "Completed"
+    }
+  ],
+  "auditors": [
+    {
+      "name": "Alice Smith",
+      "role": "Auditor",
+      "course": "CS101",
+      "date": "Oct 10, 2025"
+    },
+    {
+      "name": "Bob Johnson",
+      "role": "Observer",
+      "course": "CS102",
+      "date": "Oct 11, 2025"
+    }
+  ]
+}

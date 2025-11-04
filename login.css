@@ -1,0 +1,154 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.login{
+    box-shadow: 10px 10px 10px #923D41;
+    width: 800px;
+    min-height: 500px;
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    margin-top: 150px;
+    border-radius: 15px;
+    background-color: white;
+    overflow: hidden; 
+}
+
+.image{
+    text-align: center;
+    max-width: 300px;
+    background-color: #923D41;
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+}
+
+h3{
+    margin-bottom: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    font-size: 40px;
+}
+
+h4{
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 25px;
+}
+
+.head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 500px;
+    margin-bottom: 20px;
+}
+
+.form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+    padding: 20px 30px;
+}
+
+.input, .foot{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#forgot-pswd{
+    
+    border: none;
+    background: transparent;
+    /* -webkit-appearance: none; */
+    appearance: none;
+    color: blue; 
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 0;
+    margin-left: 140px;
+}
+
+#login{
+    background-color: #923D41;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    width: 100px;
+
+}
+
+.foot{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#signup{
+    border: none;
+    color: blue;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: right;
+}
+
+input{
+    padding: 10px;
+    width: 250px;
+    border-radius: 5px;
+    margin-right:15px ;
+    border: 2px solid gray;
+}
+
+.error-message {
+    color: red;
+    background-color: #ffe6e6;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: none; 
+    font-size: 14px;
+}
+
+.error-message.show {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .login{
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+    }
+
+    .image{
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .form{
+        width: 100%;
+        padding: 20px;
+    }
+}

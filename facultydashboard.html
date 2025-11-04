@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faculty Dashboard</title>
+    <link rel="stylesheet" href="intern.css">
+    <link rel="stylesheet" href="faculty.css">
+
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="top-bar">
+        <div class="logo">
+          <h3>Faculty Dashboard</h3>
+        </div>
+        
+        <section>
+          <ul>
+            <li><a href="#courses">Course Management</a></li>
+            <li><a href="#sessions">Session Overview</a></li>
+            <li><a href="#attendance">Attendance Reports</a></li>
+            <li><a href="#students">Student Performance</a></li>
+          </ul>
+        </section>
+        
+        <div class="search">
+          <input type="text" placeholder="Search..." />
+          <button>Search</button>
+        </div>
+        
+        <div class="user">
+          <img src="" alt="Faculty" />
+          <div class="user_details">
+            <p id="name">Prof. Johnson</p>
+            <p id="email"><i>faculty@ashesi.edu</i></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section_details">
+
+        <!-- Report -->
+        <div class="dashboard_content">
+          <div>
+            <h4>Total Courses</h4>
+            <p>5</p>
+          </div>
+          <div>
+            <h4>Active Sessions</h4>
+            <p>12</p>
+          </div>
+          <div>
+            <h4>Total Students</h4>
+            <p>148</p>
+          </div>
+          <div>
+            <h4>Avg Attendance</h4>
+            <p>89%</p>
+          </div>
+        </div>
+
+        <!-- Course Management Section -->
+        <div class="section-header">
+          <h5 id="courses">Course Management</h5>
+          <button class="create">+ Create New Course</button>
+        </div>
+
+        <div class="courses">
+          <div class="course1">
+            <h6 id="course_code">CS 601</h6>
+            <h5>Programming with Python</h5>
+            <div class="details">
+              <p class="students">115</p>
+              <p class="sessions">45</p>
+            </div>
+            <div class="course-actions">
+              <button class="edit">Edit</button>
+            </div>
+          </div>
+
+          <div class="course1">
+            <h6 id="course_code">CS 502</h6>
+            <h5>Data Structures</h5>
+            <div class="details">
+              <p class="students">92</p>
+              <p class="sessions">38</p>
+            </div>
+            <div class="course-actions">
+              <button class="edit">Edit</button>
+            </div>
+          </div>
+
+          <div class="course1">
+            <h6 id="course_code">CS 403</h6>
+            <h5>Web Development</h5>
+            <div class="details">
+              <p class="students">78</p>
+              <p class="sessions">42</p>
+            </div>
+            <div class="course-actions">
+              <button class="edit">Edit</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Overview Section -->
+        <h5 id="sessions">Session Overview</h5>
+        <div class="sessions">
+          <div class="session1">
+            <div class="session_details">
+              <h6 id="date">Oct 12, 2025 - 10:00 AM</h6>
+              <h5>CS 601 - Advanced Python</h5>
+              <p>Topic: Object-Oriented Programming</p>
+              <p>Attendance: 98/115 (85%)</p>
+            </div>
+            <button>View Details</button>
+          </div>
+
+          <div class="session1">
+            <div class="session_details">
+              <h6 id="date">Oct 10, 2025 - 11:00 AM</h6>
+              <h5>CS 403 - Web Development</h5>
+              <p>Topic: React Components</p>
+              <p>Attendance: 72/78 (92%)</p>
+            </div>
+            <button>View Details</button>
+          </div>
+        </div>
+
+          </div>
+            
+          </div>
+        </div>
+        
+        <h5 id="students">Student Performance</h5>
+        <div class="performance-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Course</th>
+                <th>Attendance</th>
+                <th>Grade</th>
+                <th>Participation</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+             >
+              <tr>
+                <td>Sarah Johnson</td>
+                <td>CS 502</td>
+                <td class="attendance-good">92%</td>
+                <td>A-</td>
+                <td>Very Good</td>
+                <td><button class="view">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>
