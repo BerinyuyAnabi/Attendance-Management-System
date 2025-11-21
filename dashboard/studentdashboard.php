@@ -1,3 +1,10 @@
+<?php 
+
+// Including the the database connection file
+require_once '/Applications/MAMP/htdocs/Attendance-Management-System/login/auth.php';
+checkRole('student');
+?> 
+
 <!DOCTYPE html>
 <html lang="en">
   <head>

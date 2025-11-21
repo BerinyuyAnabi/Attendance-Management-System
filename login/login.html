@@ -9,6 +9,8 @@
 <body>
 
     <div class="login">
+<!-- Adding the back and from button -->
+
 
         <div class="image">
             <h3>Attendance Management System</h3>
@@ -16,7 +18,7 @@
 
         <div class="form"> 
             <h4>Log In to your Account</h4>
-           <form id = "loginForm" action="" method="get" class="input">
+           <form id = "loginForm" action="login.php" method="post" class="input">
             <label for="email" > Email</label>
             <input id = 'email' type= "email" name= "email" placeholder= "Enter your email" required></input>
              <label for="password"> Password</label>
@@ -25,9 +27,10 @@
             <button id="forgot-pswd">Forgot Password</button>
 
             <div class="foot">
-                <button id="login">Log In</button>
-                <a id="signup" class="button-link" href="signup.html" role="button">Create an Account</a>
+                <button id="login" type="submit">Log In</button>
+                <a id="signup" class="button-link" href="signup.html" role="button" name="loginbtn">Create an Account</a>
             </div>
+
             
     </div>
     </div>
