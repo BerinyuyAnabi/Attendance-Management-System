@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once "../db/connect.php";
+require_once "../db/connect_db.php";
 // Get form data
 $firstName = trim($_POST['firstname'] ?? '');
 $lastName = trim($_POST['lastname'] ?? '');
