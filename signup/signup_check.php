@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once "../db/connect.php";
+require_once "../db/connect_db.php";
 
 // Debug: Log what we receive
 error_log("POST data: " . print_r($_POST, true));
