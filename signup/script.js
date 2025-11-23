@@ -1,17 +1,20 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
     const signupForm = document.getElementById('signupForm');
     
     if (signupForm) {
-        console.log('Form found');
+        // Remove the action attribute - prevent normal form submission
+        signupForm.removeAttribute('action');
+        
         signupForm.addEventListener('submit', function(e) {
+            // Prevent default form submission
             e.preventDefault();
-            console.log('Form submit prevented');
+            e.stopPropagation();
             
             // Clear previous error messages
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            document.getElementById('error').textContent = '';
+            const errorDiv = document.getElementById('error');
+            if (errorDiv) errorDiv.textContent = '';
             
             // Get form values
             const firstName = document.getElementById('f_name').value.trim();
@@ -20,8 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const role = document.getElementById('role').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('c_password').value;
-            
-            console.log('Form values:', {firstName, lastName, email, role, password: '***', confirmPassword: '***'});
             
             // Client-side validation
             let hasError = false;
@@ -57,48 +58,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (hasError) {
-                console.log('Validation errors found');
-                return;
+                return false;
             }
-            
-            console.log('Validation passed, submitting...');
             
             // Create FormData object
-            const formData = new FormData(signupForm);
-            
-            // Log FormData contents
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + (pair[0] === 'password' ? '***' : pair[1]));
-            }
+            const formData = new FormData();
+            formData.append('firstname', firstName);
+            formData.append('lastname', lastName);
+            formData.append('email', email);
+            formData.append('role', role);
+            formData.append('password', password);
             
             // Submit form via AJAX
             fetch('signup_check.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data);
                 if (data.success) {
                     alert(data.message);
                     // Redirect to login page
                     window.location.href = '../login/login.php';
                 } else {
-                    document.getElementById('error').textContent = data.message;
-                    if (data.debug) {
-                        console.log('Debug info:', data.debug);
+                    if (errorDiv) {
+                        errorDiv.textContent = data.message;
+                        errorDiv.style.color = 'red';
                     }
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('error').textContent = 'An error occurred. Please try again.';
+                if (errorDiv) {
+                    errorDiv.textContent = 'An error occurred. Please try again.';
+                    errorDiv.style.color = 'red';
+                }
             });
+            
+            return false;
         });
-    } else {
-        console.error('Form not found!');
     }
 });

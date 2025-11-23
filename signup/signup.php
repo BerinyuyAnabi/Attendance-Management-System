@@ -26,7 +26,7 @@
 <div id="error"></div>
 
 
-    <form id="signupForm" action="signup_check.php" method="post">
+    <form id="signupForm" action="signup_check.php" method="post" class="input">
     <label for="firstname">First Name</label>
     <input id='f_name' type="text" name="firstname" placeholder="Enter your First Name">
     <div class="error-message" id="error-fname"></div>
@@ -71,7 +71,6 @@
     </div>
     </div>
     <script src="script.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 </body>
 
 </html>

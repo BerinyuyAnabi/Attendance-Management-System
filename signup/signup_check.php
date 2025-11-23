@@ -1,35 +1,30 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+header('Content-Type: application/json');
 require_once "../db/connect_db.php";
 
-// Debug: Log what we receive
-error_log("POST data: " . print_r($_POST, true));
-error_log("REQUEST METHOD: " . $_SERVER['REQUEST_METHOD']);
+// Check if POST data exists
+if(empty($_POST)){
+    echo json_encode([
+        "success" => false,
+        "message" => "No form data received. Please ensure JavaScript is enabled."
+    ]);
+    exit();
+}
 
-// Get form data
-$firstName = trim($_POST['firstname']);
-$lastName = trim($_POST['lastname']);
-$email = trim($_POST['email']);
-$password = $_POST['password'];
-$role = $_POST['role'];
-
-// Debug output
-error_log("firstName: $firstName, lastName: $lastName, email: $email, role: $role");
+// Get form data with proper null handling
+$firstName = isset($_POST['firstname']) ? trim($_POST['firstname']);
+$lastName = isset($_POST['lastname']) ? trim($_POST['lastname']);
+$email = isset($_POST['email']) ? trim($_POST['email']);
+$password = isset($_POST['password']) ? $_POST['password'];
+$role = isset($_POST['role']) ? $_POST['role'];
 
 // Validate required fields
 if(empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($role)){
-    header('Content-Type: application/json');
     echo json_encode([
         "success" => false,
-        "message" => "All fields are required.",
-        "debug" => [
-            "firstname" => $firstName,
-            "lastname" => $lastName,
-            "email" => $email,
-            "role" => $role,
-            "has_password" => !empty($password)
-        ]
+        "message" => "All fields are required."
     ]);
     exit();
 }
@@ -74,7 +69,6 @@ try{
     $conn->commit();
     
     // Return success response
-    header('Content-Type: application/json');
     echo json_encode([
         "success" => true,
         "message" => "Registration successful!"
@@ -82,7 +76,6 @@ try{
     
 } catch(Exception $e){
     $conn->rollback();
-    header('Content-Type: application/json');
     echo json_encode([
         "success" => false,
         "message" => "Registration Failed: " . $e->getMessage()
