@@ -8,11 +8,11 @@ error_log("POST data: " . print_r($_POST, true));
 error_log("REQUEST METHOD: " . $_SERVER['REQUEST_METHOD']);
 
 // Get form data
-$firstName = trim($_POST['firstname'] ?? '');
-$lastName = trim($_POST['lastname'] ?? '');
-$email = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
-$role = $_POST['role'] ?? '';
+$firstName = trim($_POST['firstname']);
+$lastName = trim($_POST['lastname']);
+$email = trim($_POST['email']);
+$password = $_POST['password'];
+$role = $_POST['role'];
 
 // Debug output
 error_log("firstName: $firstName, lastName: $lastName, email: $email, role: $role");
