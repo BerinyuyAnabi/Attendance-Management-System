@@ -1,6 +1,6 @@
 
 <?php
-require_once '../login/auth_check.php';
+// require_once '../login/auth_check.php';
 ?>
 
 <!DOCTYPE html>
