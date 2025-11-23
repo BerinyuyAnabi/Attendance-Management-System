@@ -1,7 +1,23 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+header('Content-Type: application/json');
+
+require_once "/Applications/MAMP/htdocs/Attendance-Management-System/db/connect.php";
+
 // Starting the transaction 
 $conn-> begin_transaction();
+
+if(empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($role)){
+    // die("All fields are required.");
+    echo json_encode([
+        "success" => false,
+        "message" => "All fields are required."
+    ]);
+    exit();
+}
+if 
 
 try{
     // Insert into the user table 

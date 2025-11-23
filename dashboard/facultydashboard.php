@@ -1,9 +1,7 @@
-<?php 
+<?php
+include 'auth_check.php';
+?>
 
-// Including the the database connection file
-require_once '/Applications/MAMP/htdocs/Attendance-Management-System/login/auth.php';
-checkRole('faculty');
-?> 
 <!DOCTYPE html>
 <html lang="en">
   <head>

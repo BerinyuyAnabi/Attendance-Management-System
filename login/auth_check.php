@@ -5,7 +5,7 @@ if(session() == PHP_SESSION_NONE){
 
 if(!isset($_SESSION['user_id'])){
     // if the user is not logged in ensure they login 
-    header("Location: login.html");
+    header("Location: ../signin.html");
     exit();
 }
 

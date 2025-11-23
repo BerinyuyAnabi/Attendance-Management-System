@@ -1,3 +1,8 @@
+// authenticate user
+<?php
+include 'auth_check.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +25,7 @@
 <div id="error"></div>
 
 
-           <form id="signupForm" action="signin.php" method="get" class="input">
+    <form id="signupForm" action="signup_check.php" method="get" class="input">
     <label for="firstname">First Name</label>
     <input id='f_name' type="text" name="firstname" placeholder="Enter your First Name">
     <div class="error-message" id="error-fname"></div>
@@ -39,8 +44,8 @@
         <select id="role" name="role">
             <option value="" disabled selected>Select your role</option>
             <option value="student">Student</option>
-            <option value="teacher">Faculty</option>
-            <option value="admin">Admin</option>
+            <option value="faculty">Faculty</option>
+            <option value="faculty_intern">Faculty Intern</option>
      </select>
     
     <div class="error-message" id="error-role"></div>
@@ -65,7 +70,7 @@
     </div>
     </div>
     <script src="script.js"></script>
-
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 </body>
 
 </html>

@@ -7,8 +7,10 @@ const password = document.getElementById('password');
 const errorEmail = document.getElementById('error-email');
 const errorPassword = document.getElementById('error-password');
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', async function(event) {
     event.preventDefault();
+
+    const formData = new FormData(form);
     
     let isValid = true;
     
@@ -23,16 +25,36 @@ form.addEventListener('submit', function(event) {
         isValid = false;
     }
     
-    // if(password.value.length <= 6) {
-    //     showError(errorPassword, password, 'Password must be longer than 6 characters');
-    //     isValid = false;
-    // }
+    try {
+        const response = await fetch('login.php', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert('Login successful!');
+            // Redirect or perform other actions
+        }
+        // direct to pages based on role
+        if (result.role === 'Student') {
+            window.location.href = '/Attendance-Management-System/dashboards/studentdashboard.php';
+        } else if (result.role == 'Faculty'){
+            window.location.href = '/Attendance-Management-System/dashboards/facultydashboard.php';
+        } else if (result.role == 'Faculty Intern'){
+            window.location.href = '/Attendance-Management-System/dashboards/facultydashboard.php';
+        } else
+    
     
     // If all validations pass then submit the form
     if(isValid) {
         alert('Form submitted successfully!');
         form.submit(); 
     }
+} catch (error) {
+        console.error('Error:', error);
+    }
+    
 });
 
 // Helper function to show error
@@ -41,4 +63,5 @@ function showError(errorDiv, inputElement, message) {
     errorDiv.classList.add('show');
     inputElement.classList.add('error');
 }
+
 
