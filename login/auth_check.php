@@ -1,5 +1,5 @@
 <?php
-if(session() == PHP_SESSION_NONE){
+f(session_status() == PHP_SESSION_NONE){ 
     session_start();
 }
 
@@ -18,7 +18,7 @@ function checkrole($required_role){
 }
 if($_SESSION['role'] !== $required_role){
 
-    http_response_code(403)
+    http_response_code(403);
     echo "Access Denied";
     // Will include proper html code to display that 
 
