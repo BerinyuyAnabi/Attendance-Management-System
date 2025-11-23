@@ -63,6 +63,8 @@ require_once '../login/auth_check.php';
           </div>
         </div>
 
+         <a href="view_courses.php">My Courses</a>
+        <a href="join_course.php">Join Course</a>
         <!-- My Courses Section -->
         <h5 id="my-courses">My Courses</h5>
         <div class="courses">

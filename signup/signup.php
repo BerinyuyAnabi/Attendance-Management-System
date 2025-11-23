@@ -26,7 +26,7 @@
 <div id="error"></div>
 
 
-    <form id="signupForm" action="signup_check.php" method="get" class="input">
+    <form id="signupForm" action="signup_check.php" method="post">
     <label for="firstname">First Name</label>
     <input id='f_name' type="text" name="firstname" placeholder="Enter your First Name">
     <div class="error-message" id="error-fname"></div>
@@ -62,7 +62,7 @@
 
     <div class="foot">
         <button id="login" type="submit" name="Signup">Sign Up</button>
-        <a id="signup" class="button-link" href="login.html" role="button">Already have an Account</a>
+        <a id="signup" class="button-link" href="../login/login.php" role="button">Already have an Account</a>
     </div>
 </form>
 
