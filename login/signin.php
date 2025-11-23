@@ -5,9 +5,9 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../db/connect_db.php';
 
 // authenticate user
-include 'auth_check.php';
+// include 'auth_check.php';
 
-checkRole('student');
+// checkRole('student');
 ?> 
 
 <!DOCTYPE html>
