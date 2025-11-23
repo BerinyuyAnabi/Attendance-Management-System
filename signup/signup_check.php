@@ -1,8 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-require_once "/Applications/MAMP/htdocs/Attendance-Management-System/db/connect.php";
-
+require_once "../db/connect.php";
 // Get form data
 $firstName = trim($_POST['firstname'] ?? '');
 $lastName = trim($_POST['lastname'] ?? '');
