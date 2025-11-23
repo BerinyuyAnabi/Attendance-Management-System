@@ -1,10 +1,13 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script loaded');
     const signupForm = document.getElementById('signupForm');
     
     if (signupForm) {
+        console.log('Form found');
         signupForm.addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Form submit prevented');
             
             // Clear previous error messages
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
@@ -17,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const role = document.getElementById('role').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('c_password').value;
+            
+            console.log('Form values:', {firstName, lastName, email, role, password: '***', confirmPassword: '***'});
             
             // Client-side validation
             let hasError = false;
@@ -52,25 +57,40 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (hasError) {
+                console.log('Validation errors found');
                 return;
             }
             
+            console.log('Validation passed, submitting...');
+            
             // Create FormData object
             const formData = new FormData(signupForm);
+            
+            // Log FormData contents
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + (pair[0] === 'password' ? '***' : pair[1]));
+            }
             
             // Submit form via AJAX
             fetch('signup_check.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
                     alert(data.message);
                     // Redirect to login page
                     window.location.href = '../login/login.php';
                 } else {
                     document.getElementById('error').textContent = data.message;
+                    if (data.debug) {
+                        console.log('Debug info:', data.debug);
+                    }
                 }
             })
             .catch(error => {
@@ -78,5 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('error').textContent = 'An error occurred. Please try again.';
             });
         });
+    } else {
+        console.error('Form not found!');
     }
 });
