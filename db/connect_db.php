@@ -1,7 +1,8 @@
 
 <?php
-// Import environment variables from connect.env
-$env = parse_ini_file('/Applications/MAMP/htdocs/Attendance-Management-System/env/connect.env');// if your connect is in
+
+// Use __DIR__ to get the current file's directory, then go up one level
+$env = parse_ini_file(__DIR__ . '/../env/connect.env');
 
 // Collect the data from the form
 
@@ -23,7 +24,6 @@ die("Connection failed: " . $conn->connect_error);
 }
 else{
     echo "Connected successfully \n";
-    // <br>
 }
 ?>
 

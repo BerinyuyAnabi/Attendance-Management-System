@@ -1,7 +1,8 @@
 <?php 
 
 // Including the the database connection file
-require_once '/db/connect_db.php';
+require_once __DIR__ . '/../db/connect_db.php';
+
 // authenticate user
 include 'auth_check.php';
 

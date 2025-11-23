@@ -4,7 +4,9 @@ session_start();
 header('Content-Type: application/json');
 
 // Database connection  
-require_once 'Attendance-Management-System/db/connect_db.php';
+// require_once 'Attendance-Management-System/db/connect_db.php';
+
+require_once __DIR__ . '/../db/connect_db.php';
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
