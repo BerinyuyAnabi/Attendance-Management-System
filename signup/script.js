@@ -1,16 +1,34 @@
-// Wait for DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-    const signupForm = document.getElementById('signupForm');
+// Multiple methods to ensure form doesn't submit normally
+(function() {
+    'use strict';
     
-    if (signupForm) {
-        // Remove the action attribute - prevent normal form submission
-        signupForm.removeAttribute('action');
+    function initSignupForm() {
+        const signupForm = document.getElementById('signupForm');
         
-        signupForm.addEventListener('submit', function(e) {
-            // Prevent default form submission
+        if (!signupForm) {
+            console.error('Signup form not found');
+            return;
+        }
+        
+        // Method 1: Remove action attribute
+        signupForm.setAttribute('action', 'javascript:void(0);');
+        
+        // Method 2: Add onsubmit handler
+        signupForm.onsubmit = function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            
+            handleFormSubmit(e);
+            return false;
+        };
+        
+        // Method 3: Add event listener
+        signupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            handleFormSubmit(e);
+            return false;
+        }, true);
+        
+        function handleFormSubmit(e) {
             // Clear previous error messages
             document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
             const errorDiv = document.getElementById('error');
@@ -69,12 +87,24 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('role', role);
             formData.append('password', password);
             
+            // Disable submit button to prevent double submission
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Signing up...';
+            }
+            
             // Submit form via AJAX
             fetch('signup_check.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     alert(data.message);
@@ -85,6 +115,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         errorDiv.textContent = data.message;
                         errorDiv.style.color = 'red';
                     }
+                    // Re-enable submit button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Sign Up';
+                    }
                 }
             })
             .catch(error => {
@@ -93,9 +128,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorDiv.textContent = 'An error occurred. Please try again.';
                     errorDiv.style.color = 'red';
                 }
+                // Re-enable submit button
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Sign Up';
+                }
             });
             
             return false;
-        });
+        }
     }
-});
+    
+    // Try to initialize immediately
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSignupForm);
+    } else {
+        initSignupForm();
+    }
+})();
