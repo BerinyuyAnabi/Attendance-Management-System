@@ -4,7 +4,14 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
-header('Content-Type: application/json');
+// Check if this is an AJAX request
+$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ||
+          strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
+
+if ($isAjax) {
+    header('Content-Type: application/json');
+}
 
 // Buffer output to catch any unexpected output
 ob_start();
@@ -77,13 +84,19 @@ try{
     }
     
     $conn->commit();
-    
+
     // Return success response
-    echo json_encode([
-        "success" => true,
-        "message" => "Registration successful!"
-    ]);
-    
+    if ($isAjax) {
+        echo json_encode([
+            "success" => true,
+            "message" => "Registration successful!"
+        ]);
+    } else {
+        // Direct form submission - redirect to login page
+        header("Location: ../login/login.php?registered=1");
+        exit();
+    }
+
 } catch(Exception $e){
     $conn->rollback();
     echo json_encode([
