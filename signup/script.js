@@ -109,7 +109,7 @@
                 if (data.success) {
                     alert(data.message);
                     // Redirect to login page
-                    window.location.href = '../login/login.php';
+                    window.location.href = '../login/signin.php';
                 } else {
                     if (errorDiv) {
                         errorDiv.textContent = data.message;
