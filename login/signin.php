@@ -26,22 +26,31 @@ require_once __DIR__ . '/../db/connect_db.php';
             <h3>Attendance Management System</h3>
         </div>
 
-        <div class="form"> 
+        <div class="form">
             <h4>Log In to your Account</h4>
-           <form id = "loginForm" action="login.php" method="post" class="input">
-            <label for="email" > Email</label>
-            <input id = 'email' type= "email" name= "email" placeholder= "Enter your email" required></input>
-             <label for="password"> Password</label>
-            <input id = 'password' type= "password" name= "password" placeholder= "Enter your password" required></input>
-           </form>
-<!-- Adding the back and from button -->
- 
-            <button id="forgot-pswd">Forgot Password</button>
+
+            <?php if (isset($_GET['error'])): ?>
+                <div style="color: red; margin-bottom: 10px;">
+                    <?php
+                    if ($_GET['error'] == 'invalid') echo 'Invalid email or password';
+                    elseif ($_GET['error'] == 'notfound') echo 'No account found with that email';
+                    ?>
+                </div>
+            <?php endif; ?>
+
+           <form id="loginForm" action="login.php" method="post" class="input">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" placeholder="Enter your email" required>
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" placeholder="Enter your password" required>
+
+            <button id="forgot-pswd" type="button">Forgot Password</button>
 
             <div class="foot">
                 <button id="login" type="submit">Log In</button>
-                <a id="signup" class="button-link" href="signup.html" role="button" name="loginbtn">Create an Account</a>
+                <a id="signup" class="button-link" href="../signup/signup.php" role="button">Create an Account</a>
             </div>
+           </form>
 
             
     </div>
