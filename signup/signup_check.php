@@ -1,8 +1,18 @@
 <?php
+// Disable HTML error output - log errors instead
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+
 header('Content-Type: application/json');
+
+// Buffer output to catch any unexpected output
+ob_start();
+
 require_once "../db/connect_db.php";
+
+// Clear any output that might have been generated
+ob_clean();
 
 // Check if POST data exists
 if(empty($_POST)){
@@ -14,11 +24,11 @@ if(empty($_POST)){
 }
 
 // Get form data with proper null handling
-$firstName = isset($_POST['firstname']) ? trim($_POST['firstname']);
-$lastName = isset($_POST['lastname']) ? trim($_POST['lastname']);
-$email = isset($_POST['email']) ? trim($_POST['email']);
-$password = isset($_POST['password']) ? $_POST['password'];
-$role = isset($_POST['role']) ? $_POST['role'];
+$firstName = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
+$lastName = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
+$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
+$role = isset($_POST['role']) ? $_POST['role'] : '';
 
 // Validate required fields
 if(empty($firstName) || empty($lastName) || empty($email) || empty($password) || empty($role)){
