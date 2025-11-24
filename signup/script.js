@@ -1,4 +1,4 @@
-// Multiple methods to ensure form doesn't submit normally
+// Ensuring the form submit once 
 (function() {
     'use strict';
     
@@ -10,17 +10,17 @@
             return;
         }
         
-        // Method 1: Remove action attribute
+        // Remove action attribute
         signupForm.setAttribute('action', 'javascript:void(0);');
         
-        // Method 2: Add onsubmit handler
+        //Add onsubmit handler
         signupForm.onsubmit = function(e) {
             e.preventDefault();
             handleFormSubmit(e);
             return false;
         };
         
-        // Method 3: Add event listener
+        // Add event listener
         signupForm.addEventListener('submit', function(e) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -139,7 +139,7 @@
         }
     }
     
-    // Try to initialize immediately
+    // initialize immediately
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSignupForm);
     } else {
