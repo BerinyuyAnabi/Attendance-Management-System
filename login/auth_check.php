@@ -1,11 +1,12 @@
 <?php
-if(session_status() == PHP_SESSION_NONE){ 
+if(session_status() == PHP_SESSION_NONE){
     session_start();
 }
 
 if(!isset($_SESSION['user_id'])){
-    // if the user is not logged in ensure they login 
-    header("Location: signin.php");
+    // if the user is not logged in ensure they login
+    $basePath = dirname(dirname($_SERVER['PHP_SELF']));
+    header("Location: " . $basePath . "/login/signin.php");
     exit();
 }
 

@@ -1,6 +1,8 @@
 <?php
 session_start();
-require_once 'config/connect_db.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+require_once __DIR__ . '/../db/connect_db.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
     die("Youu are not authorized to access this page.");
