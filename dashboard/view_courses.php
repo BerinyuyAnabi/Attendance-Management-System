@@ -35,7 +35,6 @@ $student_id = $_SESSION['user_id'];
             echo "<div style='border:1px solid #ccc; padding:10px; margin:10px 0;'>
                     <h3>{$row['course_code']} - {$row['course_name']}</h3>
                     <p>Faculty: {$row['first_name']} {$row['last_name']}</p>
-                    <p>Semester: {$row['semester']}</p>
                   </div>";
         }
     } else {

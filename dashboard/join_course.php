@@ -51,8 +51,7 @@ if (isset($_GET['join_course'])) {
     while ($row = $result->fetch_assoc()) {
         echo "<div style='border:1px solid #ccc; padding:10px; margin:10px 0;'>
                 <h3>{$row['course_code']} - {$row['course_name']}</h3>
-                <p>Faculty: {$row['first_name']} {$row['last_name']}</p>
-                <p>Semester: {$row['semester']}</p>";
+                <p>Faculty: {$row['first_name']} {$row['last_name']}</p>";
         
         if ($row['request_status'] === 'pending') {
             echo "<button disabled>Pending Approval</button>";
