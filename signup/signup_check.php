@@ -93,7 +93,9 @@ try{
         ]);
     } else {
         // Direct form submission - redirect to login page
-        header("Location: ../login/login.php?registered=1");
+        // Get the base path dynamically
+        $basePath = dirname(dirname($_SERVER['PHP_SELF']));
+        header("Location: " . $basePath . "/login/login.php?registered=1");
         exit();
     }
 
