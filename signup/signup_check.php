@@ -95,7 +95,7 @@ try{
         // Direct form submission - redirect to login page
         // Get the base path dynamically
         $basePath = dirname(dirname($_SERVER['PHP_SELF']));
-        header("Location: " . $basePath . "/login/signin.php?registered=1");
+        header("Location: " . $basePath . "/login/signin.php");
         exit();
     }
 
