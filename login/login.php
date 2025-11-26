@@ -3,6 +3,9 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Set header for JSON response
+header('Content-Type: application/json');
+
 // Database connection
 require_once __DIR__ . '/../db/connect_db.php';
 
@@ -13,7 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = isset($_POST["password"]) ? $_POST["password"] : '';
 
     if (empty($email) || empty($password)) {
-        header("Location: signin.php?error=empty");
+        echo json_encode([
+            'success' => false,
+            'message' => 'Email and password are required'
+        ]);
         exit();
     }
 
@@ -21,7 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $conn->prepare("SELECT user_id, first_name, last_name, email, password_hash, role FROM users WHERE email = ?");
 
     if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error occurred'
+        ]);
+        exit();
     }
 
     $stmt->bind_param("s", $email);
@@ -48,44 +58,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Get base path for redirects
             $basePath = dirname(dirname($_SERVER['PHP_SELF']));
 
-            // Redirect based on role
+            // Determine redirect URL based on role
+            $redirectUrl = '';
             switch ($user['role']) {
                 case 'student':
-                    header("Location: " . $basePath . "/dashboard/studentdashboard.php");
+                    $redirectUrl = $basePath . "/dashboard/studentdashboard.php";
                     break;
                 case 'faculty':
-                    header("Location: " . $basePath . "/dashboard/facultydashboard.php");
+                    $redirectUrl = $basePath . "/dashboard/facultydashboard.php";
                     break;
                 case 'faculty_intern':
-                    header("Location: " . $basePath . "/dashboard/facultyInternDashboard.php");
+                    $redirectUrl = $basePath . "/dashboard/facultyInternDashboard.php";
                     break;
                 case 'admin':
-                    header("Location: " . $basePath . "/dashboard/admin.php");
+                    $redirectUrl = $basePath . "/dashboard/admin.php";
                     break;
                 default:
-                    header("Location: " . $basePath . "/dashboard/studentdashboard.php");
+                    $redirectUrl = $basePath . "/dashboard/studentdashboard.php";
             }
+
+            // Return success response with redirect URL
+            echo json_encode([
+                'success' => true,
+                'message' => 'Login successful',
+                'redirect' => $redirectUrl,
+                'user' => [
+                    'name' => $user['first_name'] . ' ' . $user['last_name'],
+                    'role' => $user['role']
+                ]
+            ]);
             exit();
 
         } else {
-            // Invalid password - redirect back with error
+            // Invalid password
             $stmt->close();
             $conn->close();
-            header("Location: signin.php?error=invalid");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid email or password'
+            ]);
             exit();
         }
 
     } else {
-        // No user found - redirect back with error
+        // No user found
         $stmt->close();
         $conn->close();
-        header("Location: signin.php?error=notfound");
+        echo json_encode([
+            'success' => false,
+            'message' => 'No account found with that email'
+        ]);
         exit();
     }
 
 } else {
-    // Not a POST request - redirect to login page
-    header("Location: signin.php");
+    // Not a POST request
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid request method'
+    ]);
     exit();
 }
 ?>

@@ -1,6 +1,7 @@
 <?php 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
 // Including the the database connection file
 require_once __DIR__ . '/../db/connect_db.php';
 
@@ -38,7 +39,7 @@ require_once __DIR__ . '/../db/connect_db.php';
                 </div>
             <?php endif; ?>
 
-           <form id="loginForm" action="login.php" method="post" class="input">
+           <form id="loginForm" action="login.php" method="post" class="input" onsubmit="loginAjax(event)">
             <label for="email">Email</label>
             <input id="email" type="email" name="email" placeholder="Enter your email" required>
             <label for="password">Password</label>
@@ -52,9 +53,11 @@ require_once __DIR__ . '/../db/connect_db.php';
             </div>
            </form>
 
-            
+
     </div>
     </div>
+
+    <script src="login_ajax.js"></script>
 </body>
 
 </html>
