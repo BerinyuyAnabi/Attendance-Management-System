@@ -62,7 +62,7 @@
 
     <div class="foot">
         <button id="login" type="submit" name="Signup">Sign Up</button>
-        <a id="signup" class="button-link" href="../login/login.php" role="button">Already have an Account</a>
+        <a id="signup" class="button-link" href="../login/signin.php" role="button">Already have an Account</a>
     </div>
 </form>
 
