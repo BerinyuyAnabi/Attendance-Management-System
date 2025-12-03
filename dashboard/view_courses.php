@@ -23,7 +23,7 @@ $student_id = $_SESSION['user_id'];
         SELECT c.*, u.first_name, u.last_name
         FROM course_student_list csl
         JOIN courses c ON csl.course_id = c.course_id
-        JOIN users u ON c.faculty_id = u.user_id
+        JOIN attend_users u ON c.faculty_id = u.user_id
         WHERE csl.student_id = ?
     ");
     $stmt->bind_param("i", $student_id);

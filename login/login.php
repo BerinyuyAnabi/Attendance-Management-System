@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Prepare SQL with correct column names
-    $stmt = $conn->prepare("SELECT user_id, first_name, last_name, email, password_hash, role FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT user_id, first_name, last_name, email, password_hash, role FROM attend_users WHERE email = ?");
 
     if (!$stmt) {
         echo json_encode([

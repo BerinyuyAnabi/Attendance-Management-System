@@ -39,7 +39,7 @@ if (isset($_GET['join_course'])) {
                csl.student_id as enrolled,
                cr.status as request_status
         FROM courses c
-        JOIN users u ON c.faculty_id = u.user_id
+        JOIN attend_users u ON c.faculty_id = u.user_id
         LEFT JOIN course_student_list csl ON c.course_id = csl.course_id AND csl.student_id = ?
         LEFT JOIN course_requests cr ON c.course_id = cr.course_id AND cr.student_id = ? AND cr.status = 'pending'
         WHERE csl.student_id IS NULL

@@ -54,7 +54,7 @@ if (isset($_GET['action']) && isset($_GET['request_id'])) {
         SELECT cr.*, u.first_name, u.last_name, u.email
         FROM course_requests cr
         JOIN students s ON cr.student_id = s.student_id
-        JOIN users u ON s.student_id = u.user_id
+        JOIN attend_users u ON s.student_id = u.user_id
         WHERE cr.course_id = ? AND cr.status = 'pending'
     ");
     $stmt->bind_param("i", $course_id);

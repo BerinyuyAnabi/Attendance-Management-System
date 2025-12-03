@@ -53,8 +53,8 @@ $password_hash = password_hash($password, PASSWORD_DEFAULT);
 $conn->begin_transaction();
 
 try{
-    // Insert into the user table 
-    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)");
+    // Insert into the user table
+    $stmt = $conn->prepare("INSERT INTO attend_users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $firstName, $lastName, $email, $password_hash, $role);
     
     if(!$stmt->execute()){
