@@ -3,6 +3,7 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+
 // Set header for JSON response
 header('Content-Type: application/json');
 
