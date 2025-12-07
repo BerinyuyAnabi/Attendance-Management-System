@@ -31,4 +31,3 @@ if ($conn->connect_error) {
 }
 
 // Don't echo anything here - just make the connection available
-?>
