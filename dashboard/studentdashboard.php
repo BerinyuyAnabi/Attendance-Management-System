@@ -24,7 +24,6 @@ require_once '../login/auth_check.php';
             <li><a href="#schedule">Session Schedule</a></li>
             <li><a href="#grades">Grades/Reports</a></li>
             <li><a href="#join">Join Course</a></li>
-            <li><a href="#">Logout</a></li>
           </ul>
         </section>
         
@@ -36,8 +35,9 @@ require_once '../login/auth_check.php';
         <div class="user">
           <img src="" alt="User Avatar" />
           <div class="user_details">
-            <p id="name">Student Name</p>
-            <p id="email"><i>student@email.com</i></p>
+            <p id="name"><?php echo htmlspecialchars($_SESSION['first_name'] . ' ' . $_SESSION['last_name']); ?></p>
+            <p id="email"><i><?php echo htmlspecialchars($_SESSION['email']); ?></i></p>
+            <a href="logout.php" class="logout-btn" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">Logout</a>
           </div>
         </div>
       </div>

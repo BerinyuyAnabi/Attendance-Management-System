@@ -10,12 +10,8 @@ session_destroy();
 
 // return json response
 
-echo json_enncode([
-    "logout" => true,
-    "message" => "You have been logged out successfully."
-]);
 // Redirect to login
-header("Location: login.html");
+header("Location: ../login/signin.php");
 exit();
 
 } catch(Exception $e){
