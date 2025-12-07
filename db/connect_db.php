@@ -1,4 +1,3 @@
-
 <?php
 // Load environment variables from connect.env
 $env = @parse_ini_file(__DIR__ . '/../env/connect.env');
