@@ -84,13 +84,17 @@ try{
     }
     
     $conn->commit();
+    $conn->close();
 
-    // Return success response
+    // Clear buffer and return success response
+    ob_clean();
+
     if ($isAjax) {
         echo json_encode([
             "success" => true,
             "message" => "Registration successful!"
         ]);
+        exit();
     } else {
         // redirect to login page
         // Get the base path dynamically
@@ -101,10 +105,13 @@ try{
 
 } catch(Exception $e){
     $conn->rollback();
+    $conn->close();
+
+    // Clear buffer and return error response
+    ob_clean();
     echo json_encode([
         "success" => false,
         "message" => "Registration Failed: " . $e->getMessage()
     ]);
+    exit();
 }
-
-$conn->close();
