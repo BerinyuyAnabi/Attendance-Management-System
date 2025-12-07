@@ -1,5 +1,11 @@
 <?php
 require_once '../login/auth_check.php';
+
+// Enforce student-only access
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
+    http_response_code(403);
+    die("Access Denied: Student access only");
+}
 ?>
 
 
@@ -198,5 +204,17 @@ require_once '../login/auth_check.php';
         </div>
       </div>
     </div>
+
+    <!-- Join Course Modal -->
+    <div id="joinCourseModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+      <div class="modal-content" style="background-color: #fefefe; margin: 2% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 800px; border-radius: 8px; max-height: 85vh; overflow-y: auto;">
+        <span class="close" onclick="closeJoinCourseModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2>Available Courses</h2>
+        <p style="color: #666;">Browse and request to join courses below. Faculty will review your request.</p>
+        <div id="availableCoursesList" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <script src="student_dashboard.js"></script>
   </body>
 </html>

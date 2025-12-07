@@ -1,51 +1,88 @@
 <?php
 session_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-require_once __DIR__ . '/../db/connect_db.php';
+header('Content-Type: application/json');
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'faculty') {
-    die("Youu are not authorized to access this page.");
+// Buffer output to catch any unexpected output
+ob_start();
+
+require_once '../db/connect_db.php';
+
+// Clear any output that might have been generated
+ob_clean();
+
+// Check authorization
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'faculty' && $_SESSION['role'] !== 'faculty_intern')) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Unauthorized access'
+    ]);
+    exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $course_code = $_POST['course_code'];
-    $course_name = $_POST['course_name'];
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid request method'
+    ]);
+    exit();
+}
+
+try {
+    $course_code = isset($_POST['course_code']) ? trim($_POST['course_code']) : '';
+    $course_name = isset($_POST['course_name']) ? trim($_POST['course_name']) : '';
+    $course_description = isset($_POST['course_description']) ? trim($_POST['course_description']) : '';
     $faculty_id = $_SESSION['user_id'];
 
-    $stmt = $conn->prepare("INSERT INTO courses (course_code, course_name, faculty_id) VALUES (?, ?, ?)");
-    $stmt->bind_param("ssi", $course_code, $course_name, $faculty_id);
-    
-    if ($stmt->execute()) {
-        echo "<script>alert('Course created!'); window.location='create_course.php';</script>";
-    } else {
-        echo "<script>alert('Problem with corse creation!');</script>";
+    // Validation
+    if (empty($course_code) || empty($course_name)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Course code and name are required'
+        ]);
+        exit();
     }
-}
-?>
-<!DOCTYPE html>
-<html>
-<head><title>Create Course</title></head>
-<body>
-    <h2>Create New Course</h2>
-    <form method="POST">
-        <input type="text" name="course_code" placeholder="Course Code" required><br>
-        <input type="text" name="course_name" placeholder="Course Name" required><br>
-        <button type="submit">Create Course</button>
-    </form>
-    
-    <hr>
-    <h3>My Courses</h3>
-    <?php
-    $stmt = $conn->prepare("SELECT * FROM courses WHERE faculty_id = ?");
-    $stmt->bind_param("i", $_SESSION['user_id']);
+
+    // Check if course code already exists
+    $stmt = $conn->prepare("SELECT course_id FROM courses WHERE course_code = ?");
+    $stmt->bind_param("s", $course_code);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    while ($row = $result->fetch_assoc()) {
-        echo "<p>{$row['course_code']} - {$row['course_name']} 
-              <a href='faculty_view_requests.php?course_id={$row['course_id']}'>View Requests</a></p>";
+
+    if ($result->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Course code already exists'
+        ]);
+        exit();
     }
-    ?>
-</body>
-</html>
+    $stmt->close();
+
+    // Insert course
+    $stmt = $conn->prepare("INSERT INTO courses (course_code, course_name, course_description, faculty_id) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("sssi", $course_code, $course_name, $course_description, $faculty_id);
+
+    if ($stmt->execute()) {
+        $course_id = $conn->insert_id;
+        echo json_encode([
+            'success' => true,
+            'message' => 'Course created successfully!',
+            'course' => [
+                'course_id' => $course_id,
+                'course_code' => $course_code,
+                'course_name' => $course_name,
+                'course_description' => $course_description
+            ]
+        ]);
+    } else {
+        throw new Exception('Failed to create course');
+    }
+
+    $stmt->close();
+    $conn->close();
+
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error: ' . $e->getMessage()
+    ]);
+}

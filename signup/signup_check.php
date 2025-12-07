@@ -1,5 +1,5 @@
 <?php
-// Disable HTML error output - log errors instead
+// log errors 
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
@@ -18,7 +18,7 @@ ob_start();
 
 require_once "../db/connect_db.php";
 
-// Clear any output that might have been generated
+// Clear any output generated
 ob_clean();
 
 // Check if POST data exists

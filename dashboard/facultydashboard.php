@@ -1,5 +1,11 @@
 <?php
 require_once '../login/auth_check.php';
+
+// Enforce faculty-only access
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'faculty' && $_SESSION['role'] !== 'faculty_intern')) {
+    http_response_code(403);
+    die("Access Denied: Faculty access only");
+}
 ?>
 
 <!DOCTYPE html>
@@ -37,8 +43,9 @@ require_once '../login/auth_check.php';
         <div class="user">
           <img src="" alt="Faculty" />
           <div class="user_details">
-            <p id="name">Prof. Johnson</p>
-            <p id="email"><i>faculty@ashesi.edu</i></p>
+            <p id="name"><?php echo htmlspecialchars($_SESSION['first_name'] . ' ' . $_SESSION['last_name']); ?></p>
+            <p id="email"><i><?php echo htmlspecialchars($_SESSION['email']); ?></i></p>
+            <a href="logout.php" class="logout-btn" style="display: inline-block; margin-top: 8px; padding: 6px 12px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">Logout</a>
           </div>
         </div>
       </div>
@@ -170,5 +177,54 @@ require_once '../login/auth_check.php';
 
       </div>
     </div>
+
+    <!-- Create Course Modal -->
+    <div id="createCourseModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+      <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 500px; border-radius: 8px;">
+        <span class="close" onclick="closeCreateCourseModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2>Create New Course</h2>
+        <form id="createCourseForm" onsubmit="submitCreateCourse(event)">
+          <div style="margin: 15px 0;">
+            <label for="course_code" style="display: block; margin-bottom: 5px;">Course Code *</label>
+            <input type="text" id="course_code" name="course_code" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          </div>
+          <div style="margin: 15px 0;">
+            <label for="course_name" style="display: block; margin-bottom: 5px;">Course Name *</label>
+            <input type="text" id="course_name" name="course_name" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+          </div>
+          <div style="margin: 15px 0;">
+            <label for="course_description" style="display: block; margin-bottom: 5px;">Description</label>
+            <textarea id="course_description" name="course_description" rows="4" style="width: 100%; padding: 8px; box-sizing: border-box;"></textarea>
+          </div>
+          <div style="margin-top: 20px; text-align: right;">
+            <button type="button" onclick="closeCreateCourseModal()" style="background: #ccc; color: #000; border: none; padding: 10px 20px; margin-right: 10px; border-radius: 4px; cursor: pointer;">Cancel</button>
+            <button type="submit" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Create Course</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Requests Modal -->
+    <div id="requestsModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+      <div class="modal-content" style="background-color: #fefefe; margin: 2% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 800px; border-radius: 8px; max-height: 85vh; overflow-y: auto;">
+        <span class="close" onclick="closeRequestsModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        <h2 id="requestsModalTitle">Course Requests</h2>
+        <div id="requestsList"></div>
+      </div>
+    </div>
+
+    <style>
+      .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: bold;
+      }
+      .status-pending { background: #fff3cd; color: #856404; }
+      .status-approved { background: #d4edda; color: #155724; }
+      .status-rejected { background: #f8d7da; color: #721c24; }
+    </style>
+
+    <script src="faculty_dashboard.js"></script>
   </body>
 </html>
