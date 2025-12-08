@@ -20,18 +20,18 @@ $selected_course = isset($_GET['course_id']) ? intval($_GET['course_id']) : 0;
 // Get all courses the student is enrolled in
 $courses_query = $conn->prepare("
     SELECT c.course_id, c.course_code, c.course_name,
-           COUNT(DISTINCT cs.session_id) as total_sessions,
-           COUNT(DISTINCT ar.attendance_id) as attended_sessions,
-           ROUND((COUNT(DISTINCT ar.attendance_id) / NULLIF(COUNT(DISTINCT cs.session_id), 0)) * 100, 1) as attendance_percentage
-    FROM course_enrollments ce
-    JOIN courses c ON ce.course_id = c.course_id
-    LEFT JOIN class_sessions cs ON c.course_id = cs.course_id
-    LEFT JOIN attendance_records ar ON cs.session_id = ar.session_id AND ar.student_id = ?
-    WHERE ce.student_id = ? AND ce.status = 'active'
+           COUNT(DISTINCT s.session_id) as total_sessions,
+           COUNT(DISTINCT a.attendance_id) as attended_sessions,
+           ROUND((COUNT(DISTINCT a.attendance_id) / NULLIF(COUNT(DISTINCT s.session_id), 0)) * 100, 1) as attendance_percentage
+    FROM course_student_list csl
+    JOIN courses c ON csl.course_id = c.course_id
+    LEFT JOIN sessions s ON c.course_id = s.course_id
+    LEFT JOIN attendance a ON s.session_id = a.session_id AND a.student_id = csl.student_id
+    WHERE csl.student_id = ?
     GROUP BY c.course_id, c.course_code, c.course_name
     ORDER BY c.course_code
 ");
-$courses_query->bind_param("ii", $student_id, $student_id);
+$courses_query->bind_param("i", $student_id);
 $courses_query->execute();
 $courses = $courses_query->get_result();
 $courses_data = $courses->fetch_all(MYSQLI_ASSOC);
@@ -40,18 +40,18 @@ $courses_data = $courses->fetch_all(MYSQLI_ASSOC);
 $sessions_data = [];
 if ($selected_course > 0) {
     $sessions_query = $conn->prepare("
-        SELECT cs.*,
-               ar.status as attendance_status,
-               ar.marked_at,
+        SELECT s.*,
+               a.status as attendance_status,
+               a.check_in_time,
                CASE
-                   WHEN ar.attendance_id IS NOT NULL THEN 'Attended'
-                   WHEN cs.code_expires_at < NOW() THEN 'Missed'
+                   WHEN a.attendance_id IS NOT NULL THEN 'Attended'
+                   WHEN CONCAT(s.date, ' ', s.end_time) < NOW() THEN 'Missed'
                    ELSE 'Upcoming'
                END as session_status
-        FROM class_sessions cs
-        LEFT JOIN attendance_records ar ON cs.session_id = ar.session_id AND ar.student_id = ?
-        WHERE cs.course_id = ?
-        ORDER BY cs.session_date DESC, cs.start_time DESC
+        FROM sessions s
+        LEFT JOIN attendance a ON s.session_id = a.session_id AND a.student_id = ?
+        WHERE s.course_id = ?
+        ORDER BY s.date DESC, s.start_time DESC
     ");
     $sessions_query->bind_param("ii", $student_id, $selected_course);
     $sessions_query->execute();
@@ -264,8 +264,8 @@ if ($selected_course > 0) {
                         <?php if (count($sessions_data) > 0): ?>
                             <?php foreach ($sessions_data as $session): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($session['session_name']); ?></td>
-                                    <td><?php echo date('M d, Y', strtotime($session['session_date'])); ?></td>
+                                    <td><?php echo htmlspecialchars($session['topic'] ?? 'Session'); ?></td>
+                                    <td><?php echo date('M d, Y', strtotime($session['date'])); ?></td>
                                     <td>
                                         <?php echo date('g:i A', strtotime($session['start_time'])); ?> -
                                         <?php echo date('g:i A', strtotime($session['end_time'])); ?>
@@ -285,7 +285,7 @@ if ($selected_course > 0) {
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php echo $session['marked_at'] ? date('M d, g:i A', strtotime($session['marked_at'])) : '-'; ?>
+                                        <?php echo $session['check_in_time'] ? date('g:i A', strtotime($session['check_in_time'])) : '-'; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

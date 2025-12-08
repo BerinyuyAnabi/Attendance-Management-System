@@ -27,46 +27,27 @@ function generateAttendanceCode() {
 // session creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_session'])) {
     $course_id = intval($_POST['course_id']);
-    $session_name = trim($_POST['session_name']);
+    $topic = trim($_POST['session_name']); // Using session_name as topic
+    $location = trim($_POST['location']) ?? '';
     $session_date = $_POST['session_date'];
     $start_time = $_POST['start_time'];
     $end_time = $_POST['end_time'];
-    $code_duration = intval($_POST['code_duration']); // Duration in minutes
 
     // Validate inputs
-    if (empty($session_name) || empty($session_date) || empty($start_time) || empty($end_time)) {
+    if (empty($topic) || empty($session_date) || empty($start_time) || empty($end_time)) {
         $error = "All fields are required.";
     } else {
-        // unique attendance code
-        $attendance_code = generateAttendanceCode();
-
-        // Check if code already exists 
-        while (true) {
-            $check = $conn->prepare("SELECT session_id FROM class_sessions WHERE attendance_code = ?");
-            $check->bind_param("s", $attendance_code);
-            $check->execute();
-            $result = $check->get_result();
-
-            if ($result->num_rows === 0) {
-                break; // Code is unique
-            }
-            $attendance_code = generateAttendanceCode(); // Generate new code
-        }
-
-        // Calculate code expiration (session_date + start_time + duration)
-        $session_datetime = "$session_date $start_time";
-        $code_expires_at = date('Y-m-d H:i:s', strtotime($session_datetime) + ($code_duration * 60));
-
-        // Insert session
+        // Insert session (matching your database schema)
         $stmt = $conn->prepare("
-            INSERT INTO class_sessions
-            (course_id, session_name, session_date, start_time, end_time, attendance_code, code_expires_at, created_by, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'scheduled')
+            INSERT INTO sessions
+            (course_id, topic, location, start_time, end_time, date)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $stmt->bind_param("issssssi", $course_id, $session_name, $session_date, $start_time, $end_time, $attendance_code, $code_expires_at, $user_id);
+        $stmt->bind_param("isssss", $course_id, $topic, $location, $start_time, $end_time, $session_date);
 
         if ($stmt->execute()) {
-            $message = "Session created successfully! Attendance Code: <strong>$attendance_code</strong>";
+            $session_id = $conn->insert_id;
+            $message = "Session created successfully! Session ID: <strong>$session_id</strong>";
         } else {
             $error = "Error creating session: " . $stmt->error;
         }
@@ -79,14 +60,14 @@ $courses_query->bind_param("i", $user_id);
 $courses_query->execute();
 $courses = $courses_query->get_result();
 
-// Fetch all sessions created by this instructor
+// Fetch all sessions for courses taught by this instructor
 $sessions_query = $conn->prepare("
-    SELECT cs.*, c.course_code, c.course_name,
-           (SELECT COUNT(*) FROM attendance_records WHERE session_id = cs.session_id) as attendance_count
-    FROM class_sessions cs
-    JOIN courses c ON cs.course_id = c.course_id
-    WHERE cs.created_by = ?
-    ORDER BY cs.session_date DESC, cs.start_time DESC
+    SELECT s.*, c.course_code, c.course_name,
+           (SELECT COUNT(*) FROM attendance WHERE session_id = s.session_id) as attendance_count
+    FROM sessions s
+    JOIN courses c ON s.course_id = c.course_id
+    WHERE c.faculty_id = ?
+    ORDER BY s.date DESC, s.start_time DESC
 ");
 $sessions_query->bind_param("i", $user_id);
 $sessions_query->execute();
@@ -243,10 +224,8 @@ $sessions = $sessions_query->get_result();
                 </div>
 
                 <div class="form-group">
-                    <label for="code_duration">Attendance Code Valid For (minutes) *</label>
-                    <input type="number" name="code_duration" id="code_duration"
-                           value="15" min="5" max="120" required>
-                    <small>How long after session start time should the attendance code remain valid?</small>
+                    <label for="location">Location (Optional)</label>
+                    <input type="text" name="location" id="location" placeholder="e.g., Room 301, Online">
                 </div>
 
                 <button type="submit" name="create_session" class="btn">Create Session</button>
@@ -261,11 +240,9 @@ $sessions = $sessions_query->get_result();
                 <thead>
                     <tr>
                         <th>Course</th>
-                        <th>Session Name</th>
+                        <th>Topic</th>
                         <th>Date & Time</th>
-                        <th>Attendance Code</th>
-                        <th>Code Expires</th>
-                        <th>Status</th>
+                        <th>Location</th>
                         <th>Attendance</th>
                         <th>Actions</th>
                     </tr>
@@ -275,22 +252,16 @@ $sessions = $sessions_query->get_result();
                         <?php while ($session = $sessions->fetch_assoc()): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($session['course_code']); ?></td>
-                                <td><?php echo htmlspecialchars($session['session_name']); ?></td>
+                                <td><?php echo htmlspecialchars($session['topic'] ?? 'N/A'); ?></td>
                                 <td>
-                                    <?php echo date('M d, Y', strtotime($session['session_date'])); ?><br>
+                                    <?php echo date('M d, Y', strtotime($session['date'])); ?><br>
                                     <?php echo date('g:i A', strtotime($session['start_time'])); ?> -
                                     <?php echo date('g:i A', strtotime($session['end_time'])); ?>
                                 </td>
-                                <td><span class="code-badge"><?php echo $session['attendance_code']; ?></span></td>
-                                <td><?php echo date('M d, g:i A', strtotime($session['code_expires_at'])); ?></td>
-                                <td>
-                                    <span class="status-badge status-<?php echo $session['status']; ?>">
-                                        <?php echo ucfirst($session['status']); ?>
-                                    </span>
-                                </td>
+                                <td><?php echo htmlspecialchars($session['location'] ?? 'N/A'); ?></td>
                                 <td><?php echo $session['attendance_count']; ?> students</td>
                                 <td>
-                                    <a href="manage_attendance.php?session_id=<?php echo $session['session_id']; ?>">
+                                    <a href="manage_attendance.php?session_id=<?php echo $session['session_id']; ?>" style="background: #4CAF50; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; display: inline-block;">
                                         Manage
                                     </a>
                                 </td>
@@ -298,7 +269,7 @@ $sessions = $sessions_query->get_result();
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="8" style="text-align: center; padding: 40px;">
+                            <td colspan="6" style="text-align: center; padding: 40px;">
                                 No sessions created yet. Create your first session above!
                             </td>
                         </tr>

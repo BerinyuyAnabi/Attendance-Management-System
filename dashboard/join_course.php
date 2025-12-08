@@ -5,17 +5,17 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../db/connect_db.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
-    die("Youu are not authorized to access this page.");
-
+    header('Location: ../login/signin.php');
+    exit();
 }
 
 $student_id = $_SESSION['user_id'];
 
 // Handle join request
 if (isset($_GET['join_course'])) {
-    $course_id = $_GET['join_course'];
-    
-    $stmt = $conn->prepare("INSERT INTO course_requests (student_id, course_id) VALUES (?, ?)");
+    $course_id = intval($_GET['join_course']);
+
+    $stmt = $conn->prepare("INSERT INTO course_requests (student_id, course_id, status) VALUES (?, ?, 'pending')");
     $stmt->bind_param("ii", $student_id, $course_id);
     
     if ($stmt->execute()) {

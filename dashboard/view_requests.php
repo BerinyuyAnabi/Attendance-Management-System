@@ -5,15 +5,22 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../db/connect_db.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'faculty') {
-    die("Youu are not authorized to access this page.");
+    header('Location: ../login/signin.php');
+    exit();
 }
 
-$course_id = $_GET['course_id'] ?? 0;
+$course_id = isset($_GET['course_id']) ? intval($_GET['course_id']) : 0;
+$faculty_id = $_SESSION['user_id'];
 
 // Handle approve/reject
 if (isset($_GET['action']) && isset($_GET['request_id'])) {
-    $request_id = $_GET['request_id'];
+    $request_id = intval($_GET['request_id']);
     $action = $_GET['action'];
+
+    // Validate action
+    if (!in_array($action, ['approve', 'reject'])) {
+        die("Invalid action");
+    }
     
     if ($action === 'approve') {
         // Get student and course
@@ -51,13 +58,13 @@ if (isset($_GET['action']) && isset($_GET['request_id'])) {
     
     <?php
     $stmt = $conn->prepare("
-        SELECT cr.*, u.first_name, u.last_name, u.email
+        SELECT cr.*, u.first_name, u.last_name, u.email, c.course_name, c.course_code
         FROM course_requests cr
-        JOIN students s ON cr.student_id = s.student_id
-        JOIN attend_users u ON s.student_id = u.user_id
-        WHERE cr.course_id = ? AND cr.status = 'pending'
+        JOIN attend_users u ON cr.student_id = u.user_id
+        JOIN courses c ON cr.course_id = c.course_id
+        WHERE cr.course_id = ? AND cr.status = 'pending' AND c.faculty_id = ?
     ");
-    $stmt->bind_param("i", $course_id);
+    $stmt->bind_param("ii", $course_id, $faculty_id);
     $stmt->execute();
     $result = $stmt->get_result();
     

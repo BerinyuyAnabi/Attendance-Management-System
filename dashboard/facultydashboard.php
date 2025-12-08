@@ -121,58 +121,17 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'faculty' && $_SESSION['
 
         <!-- Session Overview Section -->
         <h5 id="sessions">Session Overview</h5>
-        <div class="sessions">
-          <div class="session1">
-            <div class="session_details">
-              <h6 id="date">Oct 12, 2025 - 10:00 AM</h6>
-              <h5>CS 601 - Advanced Python</h5>
-              <p>Topic: Object-Oriented Programming</p>
-              <p>Attendance: 98/115 (85%)</p>
-            </div>
-            <button>View Details</button>
-          </div>
-
-          <div class="session1">
-            <div class="session_details">
-              <h6 id="date">Oct 10, 2025 - 11:00 AM</h6>
-              <h5>CS 403 - Web Development</h5>
-              <p>Topic: React Components</p>
-              <p>Attendance: 72/78 (92%)</p>
-            </div>
-            <button>View Details</button>
-          </div>
+        <div class="sessions" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 20px 0;">
+          <p style="padding: 20px; text-align: center; color: #666;">
+            To create and manage sessions, <a href="create_session.php" style="color: #4CAF50; font-weight: bold; text-decoration: underline;">click here</a>
+          </p>
         </div>
 
-          </div>
-            
-          </div>
-        </div>
-        
         <h5 id="students">Student Performance</h5>
-        <div class="performance-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Student Name</th>
-                <th>Course</th>
-                <th>Attendance</th>
-                <th>Grade</th>
-                <th>Participation</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-             >
-              <tr>
-                <td>Sarah Johnson</td>
-                <td>CS 502</td>
-                <td class="attendance-good">92%</td>
-                <td>A-</td>
-                <td>Very Good</td>
-                <td><button class="view">View</button></td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="performance-section" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 20px 0;">
+          <p style="text-align: center; padding: 40px; color: #666;">
+            Student performance tracking coming soon. Use <a href="create_session.php" style="color: #4CAF50; font-weight: bold; text-decoration: underline;">Session Management</a> to track attendance.
+          </p>
         </div>
 
       </div>

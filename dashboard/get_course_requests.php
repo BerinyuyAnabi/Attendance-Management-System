@@ -36,7 +36,7 @@ try {
             WHERE c.faculty_id = ? AND cr.course_id = ?
             ORDER BY
                 CASE WHEN cr.status = 'pending' THEN 0 ELSE 1 END,
-                cr.requested_at DESC
+                cr.request_date DESC
         ");
         $stmt->bind_param("ii", $faculty_id, $course_id);
     } else {
@@ -53,7 +53,7 @@ try {
             JOIN attend_users u ON cr.student_id = u.user_id
             JOIN courses c ON cr.course_id = c.course_id
             WHERE c.faculty_id = ? AND cr.status = 'pending'
-            ORDER BY cr.requested_at DESC
+            ORDER BY cr.request_date DESC
         ");
         $stmt->bind_param("i", $faculty_id);
     }

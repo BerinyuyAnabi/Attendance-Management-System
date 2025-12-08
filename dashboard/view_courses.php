@@ -5,8 +5,8 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../db/connect_db.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
-    die("Youu are not authorized to access this page.");
-
+    header('Location: ../login/signin.php');
+    exit();
 }
 
 $student_id = $_SESSION['user_id'];

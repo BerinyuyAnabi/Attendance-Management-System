@@ -12,12 +12,13 @@ if ($env === false) {
     die("Error: Could not load environment file");
 }
 
-// Create database connection (suppress warnings with @)
+// Create database connection
 $conn = @new mysqli(
     $env['host'],
     $env['user'],
     $env['password'],
-    $env['database']
+    $env['database'],
+    isset($env['port']) ? $env['port'] : 3306
 );
 
 // Check connection
@@ -30,4 +31,3 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Don't echo anything here - just make the connection available

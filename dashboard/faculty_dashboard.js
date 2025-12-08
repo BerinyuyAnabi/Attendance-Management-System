@@ -94,10 +94,10 @@ function displayFacultyCourses(courses) {
             <h5>${escapeHtml(course.course_name)}</h5>
             <div class="details">
                 <p class="students">${course.student_count} Students</p>
-                ${course.pending_requests > 0 ? `<p class="requests" style="color: #ff9800;">${course.pending_requests} Pending Requests</p>` : ''}
+                ${course.pending_requests > 0 ? `<p class="requests" style="color: #ff9800; font-weight: bold;">${course.pending_requests} Pending Requests</p>` : '<p style="color: #4CAF50; font-size: 0.9em;">No pending requests</p>'}
             </div>
             <div class="course-actions">
-                <button class="edit" onclick="viewCourseRequests(${course.course_id}, '${escapeHtml(course.course_name)}')">View Requests</button>
+                <button class="edit" onclick="viewCourseRequests(${course.course_id}, '${escapeHtml(course.course_name)}')" style="background: #2196F3; padding: 8px 16px; border: none; color: white; border-radius: 4px; cursor: pointer; font-size: 14px;">View Requests</button>
             </div>
         </div>
     `).join('');
@@ -118,13 +118,29 @@ function loadPendingRequests() {
 }
 
 function showPendingRequestsNotification(count) {
-    const header = document.querySelector('.top-bar');
-    if (header && count > 0) {
+    // Remove existing notification if any
+    const existingNotification = document.getElementById('pendingRequestsNotification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    if (count > 0) {
         const notification = document.createElement('div');
-        notification.style.cssText = 'position: fixed; top: 70px; right: 20px; background: #ff9800; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; cursor: pointer;';
-        notification.innerHTML = `${count} Pending Request${count > 1 ? 's' : ''}`;
-        notification.onclick = showAllRequests;
+        notification.id = 'pendingRequestsNotification';
+        notification.style.cssText = 'position: fixed; top: 70px; right: 20px; background: #ff9800; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;';
+        notification.innerHTML = `
+            <span onclick="showAllRequests()">${count} Pending Request${count > 1 ? 's' : ''} - Click to view</span>
+            <button onclick="dismissNotification(event)" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 2px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">✕</button>
+        `;
         document.body.appendChild(notification);
+    }
+}
+
+function dismissNotification(event) {
+    event.stopPropagation();
+    const notification = document.getElementById('pendingRequestsNotification');
+    if (notification) {
+        notification.remove();
     }
 }
 
@@ -177,7 +193,7 @@ function showRequestsModal(requests, title) {
                         <h4 style="margin: 0 0 5px 0;">${escapeHtml(request.first_name)} ${escapeHtml(request.last_name)}</h4>
                         <p style="margin: 5px 0; color: #666;">${escapeHtml(request.email)}</p>
                         <p style="margin: 5px 0;"><strong>Course:</strong> ${escapeHtml(request.course_code)} - ${escapeHtml(request.course_name)}</p>
-                        <p style="margin: 5px 0; font-size: 0.9em; color: #999;">Requested: ${new Date(request.requested_at).toLocaleDateString()}</p>
+                        <p style="margin: 5px 0; font-size: 0.9em; color: #999;">Requested: ${new Date(request.request_date).toLocaleDateString()}</p>
                         <p style="margin: 5px 0;"><span class="status-badge status-${request.status}">${request.status.toUpperCase()}</span></p>
                     </div>
                     ${request.status === 'pending' ? `

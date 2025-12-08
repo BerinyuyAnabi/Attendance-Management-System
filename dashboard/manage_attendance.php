@@ -23,8 +23,8 @@ if ($session_id === 0) {
 }
 
 // Verify this session belongs to this user
-$verify = $conn->prepare("SELECT * FROM class_sessions WHERE session_id = ? AND created_by = ?");
-$verify->bind_param("ii", $session_id, $user_id);
+$verify = $conn->prepare("SELECT * FROM sessions WHERE session_id = ?");
+$verify->bind_param("i", $session_id);
 $verify->execute();
 $session_result = $verify->get_result();
 
@@ -39,21 +39,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_attendance'])) {
     $student_id = intval($_POST['student_id']);
     $status = $_POST['status'];
 
+    // Validate status
+    $valid_statuses = ['present', 'absent', 'late'];
+    if (!in_array($status, $valid_statuses)) {
+        die("Invalid attendance status");
+    }
+
     // Check if attendance already exists
-    $check = $conn->prepare("SELECT attendance_id FROM attendance_records WHERE session_id = ? AND student_id = ?");
+    $check = $conn->prepare("SELECT attendance_id FROM attendance WHERE session_id = ? AND student_id = ?");
     $check->bind_param("ii", $session_id, $student_id);
     $check->execute();
     $exists = $check->get_result();
 
     if ($exists->num_rows > 0) {
         // Update existing record
-        $update = $conn->prepare("UPDATE attendance_records SET status = ?, marked_by = ? WHERE session_id = ? AND student_id = ?");
-        $update->bind_param("siii", $status, $user_id, $session_id, $student_id);
+        $update = $conn->prepare("UPDATE attendance SET status = ? WHERE session_id = ? AND student_id = ?");
+        $update->bind_param("sii", $status, $session_id, $student_id);
         $update->execute();
     } else {
         // Insert new record
-        $insert = $conn->prepare("INSERT INTO attendance_records (session_id, student_id, status, marked_by) VALUES (?, ?, ?, ?)");
-        $insert->bind_param("iisi", $session_id, $student_id, $status, $user_id);
+        $insert = $conn->prepare("INSERT INTO attendance (session_id, student_id, status) VALUES (?, ?, ?)");
+        $insert->bind_param("iis", $session_id, $student_id, $status);
         $insert->execute();
     }
 
@@ -64,12 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_attendance'])) {
 // Get course information
 $course_query = $conn->prepare("
     SELECT c.* FROM courses c
-    JOIN class_sessions cs ON c.course_id = cs.course_id
-    WHERE cs.session_id = ?
+    JOIN sessions s ON c.course_id = s.course_id
+    WHERE s.session_id = ?
 ");
 $course_query->bind_param("i", $session_id);
 $course_query->execute();
 $course = $course_query->get_result()->fetch_assoc();
+
+if (!$course) {
+    die("Course not found for this session");
+}
 
 // Get all enrolled students and their attendance status
 $students_query = $conn->prepare("
@@ -78,15 +88,13 @@ $students_query = $conn->prepare("
         u.first_name,
         u.last_name,
         u.email,
-        ar.status as attendance_status,
-        ar.marked_at,
-        ar.marked_by,
-        marker.first_name as marked_by_name
-    FROM course_enrollments ce
-    JOIN attend_users u ON ce.student_id = u.user_id
-    LEFT JOIN attendance_records ar ON ar.session_id = ? AND ar.student_id = u.user_id
-    LEFT JOIN attend_users marker ON ar.marked_by = marker.user_id
-    WHERE ce.course_id = ? AND ce.status = 'active'
+        a.status as attendance_status,
+        a.check_in_time
+    FROM course_student_list csl
+    JOIN students st ON csl.student_id = st.student_id
+    JOIN attend_users u ON st.student_id = u.user_id
+    LEFT JOIN attendance a ON a.session_id = ? AND a.student_id = st.student_id
+    WHERE csl.course_id = ?
     ORDER BY u.last_name, u.first_name
 ");
 $students_query->bind_param("ii", $session_id, $course['course_id']);
@@ -214,17 +222,11 @@ $not_marked = $total_students - ($present_count + $absent_count + $late_count);
             <h1>Manage Attendance</h1>
             <h2><?php echo htmlspecialchars($course['course_code'] . ' - ' . $course['course_name']); ?></h2>
             <p>
-                <strong>Session:</strong> <?php echo htmlspecialchars($session_info['session_name']); ?><br>
-                <strong>Date:</strong> <?php echo date('F j, Y', strtotime($session_info['session_date'])); ?><br>
+                <strong>Topic:</strong> <?php echo htmlspecialchars($session_info['topic'] ?? 'N/A'); ?><br>
+                <strong>Date:</strong> <?php echo date('F j, Y', strtotime($session_info['date'])); ?><br>
                 <strong>Time:</strong> <?php echo date('g:i A', strtotime($session_info['start_time'])); ?> -
                 <?php echo date('g:i A', strtotime($session_info['end_time'])); ?>
             </p>
-
-            <div class="code-display">
-                Attendance Code: <?php echo $session_info['attendance_code']; ?>
-                <br>
-                <small style="font-size: 14px;">Expires: <?php echo date('M d, g:i A', strtotime($session_info['code_expires_at'])); ?></small>
-            </div>
         </div>
 
         <!-- Statistics -->
@@ -275,18 +277,10 @@ $not_marked = $total_students - ($present_count + $absent_count + $late_count);
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <?php echo $student['marked_at'] ? date('M d, g:i A', strtotime($student['marked_at'])) : '-'; ?>
+                                <?php echo $student['check_in_time'] ? date('g:i A', strtotime($student['check_in_time'])) : '-'; ?>
                             </td>
                             <td>
-                                <?php
-                                if ($student['marked_by_name']) {
-                                    echo htmlspecialchars($student['marked_by_name']);
-                                } elseif ($student['marked_by'] == $student['user_id']) {
-                                    echo 'Self';
-                                } else {
-                                    echo '-';
-                                }
-                                ?>
+                                <?php echo $student['attendance_status'] ? 'Marked' : '-'; ?>
                             </td>
                             <td>
                                 <form method="POST" style="display: inline;">

@@ -28,7 +28,7 @@ try {
         LEFT JOIN course_requests cr ON c.course_id = cr.course_id
         WHERE c.faculty_id = ?
         GROUP BY c.course_id
-        ORDER BY c.created_at DESC
+        ORDER BY c.course_id DESC
     ");
     $stmt->bind_param("i", $faculty_id);
     $stmt->execute();

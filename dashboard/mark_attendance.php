@@ -6,10 +6,25 @@
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Check if this is an AJAX request
+$is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+// Also check if Accept header indicates JSON
+if (!$is_ajax && isset($_SERVER['HTTP_ACCEPT'])) {
+    $is_ajax = strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false;
+}
+
 require_once __DIR__ . '/../db/connect_db.php';
 
 // Check if user is a student
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
+    if ($is_ajax) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+        exit();
+    }
     header('Location: ../login/signin.php');
     exit();
 }
@@ -20,36 +35,41 @@ $error = '';
 $session_info = null;
 
 //  attendance code submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance_code'])) {
-    $code = strtoupper(trim($_POST['attendance_code']));
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['attendance_code']) || isset($_POST['code']))) {
+    $code = isset($_POST['code']) ? trim($_POST['code']) : strtoupper(trim($_POST['attendance_code']));
 
-    // Find the session with this code
-    $session_query = $conn->prepare("
-        SELECT cs.*, c.course_code, c.course_name
-        FROM class_sessions cs
-        JOIN courses c ON cs.course_id = c.course_id
-        WHERE cs.attendance_code = ?
-    ");
-    $session_query->bind_param("s", $code);
-    $session_query->execute();
-    $result = $session_query->get_result();
-
-    if ($result->num_rows === 0) {
-        $error = "Invalid attendance code. Please check and try again.";
+    // Find student record
+    $student_check = $conn->prepare("SELECT student_id FROM students WHERE student_id = ?");
+    $student_check->bind_param("i", $student_id);
+    $student_check->execute();
+    if ($student_check->get_result()->num_rows === 0) {
+        $error = "Student record not found. Please contact administrator.";
     } else {
-        $session = $result->fetch_assoc();
-        $session_id = $session['session_id'];
-        $course_id = $session['course_id'];
+        // Note: Since your database doesn't have attendance_code, we'll just mark attendance for the session
+        // For now, let's assume the code is the session_id
+        $session_id = intval($code);
 
-        // Check if code has expired
-        $now = date('Y-m-d H:i:s');
-        if ($now > $session['code_expires_at']) {
-            $error = "This attendance code has expired. Please contact your instructor.";
+        // Get session info
+        $session_query = $conn->prepare("
+            SELECT s.*, c.course_code, c.course_name
+            FROM sessions s
+            JOIN courses c ON s.course_id = c.course_id
+            WHERE s.session_id = ?
+        ");
+        $session_query->bind_param("i", $session_id);
+        $session_query->execute();
+        $result = $session_query->get_result();
+
+        if ($result->num_rows === 0) {
+            $error = "Invalid session code. Please check and try again.";
         } else {
+            $session = $result->fetch_assoc();
+            $course_id = $session['course_id'];
+
             // Check if student is enrolled in this course
             $enrollment_check = $conn->prepare("
-                SELECT enrollment_id FROM course_enrollments
-                WHERE student_id = ? AND course_id = ? AND status = 'active'
+                SELECT * FROM course_student_list
+                WHERE student_id = ? AND course_id = ?
             ");
             $enrollment_check->bind_param("ii", $student_id, $course_id);
             $enrollment_check->execute();
@@ -60,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance_code'])) {
             } else {
                 // Check if attendance already marked
                 $attendance_check = $conn->prepare("
-                    SELECT attendance_id, status FROM attendance_records
+                    SELECT attendance_id, status FROM attendance
                     WHERE session_id = ? AND student_id = ?
                 ");
                 $attendance_check->bind_param("ii", $session_id, $student_id);
@@ -71,27 +91,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance_code'])) {
                     $existing = $attendance_result->fetch_assoc();
                     $message = "You have already marked attendance for this session as " . ucfirst($existing['status']) . ".";
                     $session_info = $session;
+
+                    // Return JSON for AJAX
+                    if ($is_ajax) {
+                        header('Content-Type: application/json');
+                        echo json_encode([
+                            'success' => true,
+                            'message' => $message,
+                            'already_marked' => true
+                        ]);
+                        exit();
+                    }
                 } else {
                     // Determine if student is late
-                    $session_start = $session['session_date'] . ' ' . $session['start_time'];
-                    $status = ($now > $session_start) ? 'late' : 'present';
+                    $session_datetime = $session['date'] . ' ' . $session['start_time'];
+                    $now = date('Y-m-d H:i:s');
+                    $status = (strtotime($now) > strtotime($session_datetime)) ? 'late' : 'present';
 
                     // Mark attendance
                     $mark = $conn->prepare("
-                        INSERT INTO attendance_records (session_id, student_id, status, marked_by)
-                        VALUES (?, ?, ?, ?)
+                        INSERT INTO attendance (session_id, student_id, status, check_in_time)
+                        VALUES (?, ?, ?, CURTIME())
                     ");
-                    $mark->bind_param("iisi", $session_id, $student_id, $status, $student_id);
+                    $mark->bind_param("iis", $session_id, $student_id, $status);
 
                     if ($mark->execute()) {
                         $message = "Attendance marked successfully! Status: " . ucfirst($status);
                         $session_info = $session;
+
+                        // Return JSON for AJAX
+                        if ($is_ajax) {
+                            header('Content-Type: application/json');
+                            echo json_encode([
+                                'success' => true,
+                                'message' => $message,
+                                'status' => $status
+                            ]);
+                            exit();
+                        }
                     } else {
                         $error = "Error marking attendance: " . $mark->error;
+
+                        // Return JSON for AJAX
+                        if ($is_ajax) {
+                            header('Content-Type: application/json');
+                            echo json_encode(['success' => false, 'message' => $error]);
+                            exit();
+                        }
                     }
                 }
+            } else {
+                // Return JSON for AJAX - not enrolled
+                if ($is_ajax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'message' => $error]);
+                    exit();
+                }
+            }
+        } else {
+            // Return JSON for AJAX - invalid session
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $error]);
+                exit();
             }
         }
+    }
+
+    // Return JSON for AJAX - student record not found
+    if ($is_ajax && $error) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => $error]);
+        exit();
     }
 }
 ?>
@@ -230,8 +301,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance_code'])) {
                     <div class="session-details">
                         <h3>Session Details</h3>
                         <p><strong>Course:</strong> <?php echo htmlspecialchars($session_info['course_code'] . ' - ' . $session_info['course_name']); ?></p>
-                        <p><strong>Session:</strong> <?php echo htmlspecialchars($session_info['session_name']); ?></p>
-                        <p><strong>Date:</strong> <?php echo date('F j, Y', strtotime($session_info['session_date'])); ?></p>
+                        <p><strong>Topic:</strong> <?php echo htmlspecialchars($session_info['topic'] ?? 'N/A'); ?></p>
+                        <p><strong>Date:</strong> <?php echo date('F j, Y', strtotime($session_info['date'])); ?></p>
                         <p><strong>Time:</strong> <?php echo date('g:i A', strtotime($session_info['start_time'])); ?> - <?php echo date('g:i A', strtotime($session_info['end_time'])); ?></p>
                     </div>
                 <?php endif; ?>
@@ -259,8 +330,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['attendance_code'])) {
                             type="text"
                             name="attendance_code"
                             id="attendance_code"
-                            placeholder="XXXXXX"
-                            maxlength="10"
+                            placeholder="Enter Session ID"
                             required
                             autofocus
                         >

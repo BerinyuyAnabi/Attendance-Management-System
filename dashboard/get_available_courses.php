@@ -35,7 +35,7 @@ try {
         LEFT JOIN course_student_list csl ON c.course_id = csl.course_id AND csl.student_id = ?
         LEFT JOIN course_requests cr ON c.course_id = cr.course_id AND cr.student_id = ?
         WHERE csl.student_id IS NULL
-        ORDER BY c.created_at DESC
+        ORDER BY c.course_id DESC
     ");
     $stmt->bind_param("ii", $student_id, $student_id);
     $stmt->execute();

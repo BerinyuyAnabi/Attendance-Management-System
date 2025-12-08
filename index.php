@@ -11,13 +11,12 @@ if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     } elseif($role === 'faculty') {
         header("Location: dashboard/facultydashboard.php");
         exit();
-    } elseif($role === 'student') {
-        header("Location: dashboard/studentdashboard.php");
+    } else {
+        // Invalid role or admin - redirect to login
+        header("Location: login/signin.php");
         exit();
     }
-    exit();}
-    else {
-
+} else {
     header("Location: login/signin.php");
     exit();
 }

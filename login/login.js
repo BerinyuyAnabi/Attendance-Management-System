@@ -35,7 +35,7 @@ form.addEventListener('submit', function(event) {
         return;
     }
 
-    // Prepare the form data for AJAX
+    // Prepare form data for AJAX
     const formData = new FormData(form);
 
     // Disable the login button to prevent multiple submissions
@@ -53,8 +53,6 @@ form.addEventListener('submit', function(event) {
     })
     .then(result => {
         // Handle the response from the server
-        console.log('Server response:', result);
-
         if (result.success) {
             // Display success message
             showMessage(

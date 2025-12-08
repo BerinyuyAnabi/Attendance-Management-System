@@ -1,17 +1,11 @@
 <?php
-// log errors 
+// log errors
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
-// Check if this is an AJAX request
-$isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-          strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' ||
-          strpos($_SERVER['HTTP_ACCEPT'] ?? '', 'application/json') !== false;
-
-if ($isAjax) {
-    header('Content-Type: application/json');
-}
+// Always treat as AJAX since form is submitted via Fetch
+header('Content-Type: application/json');
 
 // Buffer output to catch any unexpected output
 ob_start();
@@ -89,19 +83,11 @@ try{
     // Clear buffer and return success response
     ob_clean();
 
-    if ($isAjax) {
-        echo json_encode([
-            "success" => true,
-            "message" => "Registration successful!"
-        ]);
-        exit();
-    } else {
-        // redirect to login page
-        // Get the base path dynamically
-        $basePath = dirname(dirname($_SERVER['PHP_SELF']));
-        header("Location: " . $basePath . "/login/signin.php");
-        exit();
-    }
+    echo json_encode([
+        "success" => true,
+        "message" => "Registration successful!"
+    ]);
+    exit();
 
 } catch(Exception $e){
     $conn->rollback();

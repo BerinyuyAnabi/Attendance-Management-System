@@ -57,8 +57,8 @@ try {
     }
     $stmt->close();
 
-    // Insert course
-    $stmt = $conn->prepare("INSERT INTO courses (course_code, course_name, course_description, faculty_id) VALUES (?, ?, ?, ?)");
+    // Insert course (column is 'description' not 'course_description')
+    $stmt = $conn->prepare("INSERT INTO courses (course_code, course_name, description, faculty_id) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sssi", $course_code, $course_name, $course_description, $faculty_id);
 
     if ($stmt->execute()) {

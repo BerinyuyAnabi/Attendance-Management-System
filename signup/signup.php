@@ -39,14 +39,12 @@
     <input id='email' type="email" name="email" placeholder="Enter your email">
     <div class="error-message" id="error-email"></div>
 
-    <label for="email">Role</label>
-    <!-- <input id='role' type="role" name="email" placeholder="Choose your role"> -->
+    <label for="role">Role</label>
     <!-- Role dropdown -->
         <select id="role" name="role">
             <option value="" disabled selected>Select your role</option>
             <option value="student">Student</option>
             <option value="faculty">Faculty</option>
-            <option value="faculty_intern">Faculty Intern</option>
      </select>
     
     <div class="error-message" id="error-role"></div>
