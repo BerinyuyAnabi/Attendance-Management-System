@@ -13,7 +13,7 @@
         // Remove default action
         signupForm.setAttribute('action', 'javascript:void(0);');
 
-        // Attach ONLY ONE submit handler
+        // submit handler
         signupForm.addEventListener('submit', function (e) {
             e.preventDefault();
             handleFormSubmit();
@@ -118,7 +118,7 @@
         }
     }
 
-    // Initialize immediately
+    
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initSignupForm);
     } else {
