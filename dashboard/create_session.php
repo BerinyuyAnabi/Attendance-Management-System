@@ -1,7 +1,6 @@
 <?php
 /**
- * Creates sessions for Faculty, Interns, and Teachers
- */
+ * Creates sessions for Faculty
 
 session_start();
 error_reporting(E_ALL);
