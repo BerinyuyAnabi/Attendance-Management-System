@@ -63,8 +63,7 @@ try {
         $attendance_rate = round($rate) . '%';
     }
 
-    // GPA calculation (placeholder - you can implement actual GPA logic later)
-    // For now, we'll just show a dash since there's no grades table
+    // GPA calculation 
     $gpa = '-';
 
     echo json_encode([
@@ -83,3 +82,4 @@ try {
         'message' => 'Error: ' . $e->getMessage()
     ]);
 }
+
