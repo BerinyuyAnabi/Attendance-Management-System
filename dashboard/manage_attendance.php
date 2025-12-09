@@ -1,6 +1,6 @@
 <?php
 /**
- * MANAGE ATTENDANCE - For Faculty, Interns, and Teachers
+ * MANAGE ATTENDANCE - For Faculty
  */
 
 session_start();
