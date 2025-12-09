@@ -1,6 +1,5 @@
 <?php
-/**
- * Creates sessions for Faculty
+
 
 session_start();
 error_reporting(E_ALL);
